@@ -42,7 +42,7 @@ export default function Checkout() {
       const config = {
         url: "/payment/initiatepayment",
         method: "POST",
-        baseURL: "http://192.168.0.102:8002/api",
+        baseURL: "https://api.healinggarden.co.in/api",
         headers: { "content-type": "application/json" },
         data: {
           order_id: checkoutData.order_id,

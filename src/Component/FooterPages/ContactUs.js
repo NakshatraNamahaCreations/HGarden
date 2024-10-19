@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { Card, Form } from "react-bootstrap";
+import { Card, Form, Spinner } from "react-bootstrap"; // Add Spinner from Bootstrap
 import "./contact.css";
 import { IoIosCall } from "react-icons/io";
 import { TfiEmail } from "react-icons/tfi";
@@ -9,7 +9,6 @@ import { FaLocationDot } from "react-icons/fa6";
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import { Helmet } from "react-helmet";
-
 import axios from "axios";
 import { FaCheckCircle } from "react-icons/fa";
 
@@ -17,6 +16,7 @@ export default function ContactUs() {
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const [mobileno, setmobileno] = useState("");
   let initialData = {
@@ -35,13 +35,9 @@ export default function ContactUs() {
   const validateForm = () => {
     let formErrors = {};
     if (!requestData.fullname) formErrors.fullname = "Full Name is required";
-    // if (!requestData.companyname) formErrors.companyname = "Company Name is required";
-
     if (!mobileno) formErrors.mobileno = "Phone Number is required";
     else if (!/^\d{10}$/.test(mobileno))
       formErrors.mobileno = "Phone Number must be exactly 10 digits";
-    // if (!requestData.email) formErrors.email = "Email is required";
-    // if (!/\S+@\S+\.\S+/.test(requestData.email)) formErrors.email = "Email is invalid";
     if (!requestData.message) formErrors.message = "Message is required";
 
     setErrors(formErrors);
@@ -50,6 +46,8 @@ export default function ContactUs() {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
+    setIsLoading(true); // Start loader
 
     try {
       let config = {
@@ -79,6 +77,8 @@ export default function ContactUs() {
       }
     } catch (error) {
       alert("An error occurred during submission. Please try again.");
+    } finally {
+      setIsLoading(false); // Stop loader
     }
   };
 
@@ -89,9 +89,11 @@ export default function ContactUs() {
       [name]: value,
     }));
   };
+
   const handleWhatsAppClick = () => {
     window.open("https://wa.me/919620520200", "_blank");
   };
+
   return (
     <>
       <Helmet>
@@ -234,14 +236,27 @@ export default function ContactUs() {
                 </div>
 
                 <div className="row m-auto">
+                  {/* Button disabled when loading */}
                   <button
                     className="col-md-6 m-auto filter text-white p-2"
                     onClick={handleSubmit}
+                    disabled={isLoading} // Disable when loading
                   >
-                    Submit
+                    {isLoading ? (
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      "Submit"
+                    )}
                   </button>
                 </div>
               </div>
+              {/* Contact Info Section */}
               <div className="col-md-6 contact-form p-4">
                 <p className="row m-auto main_heading text-center">
                   Get In Touch
@@ -323,7 +338,6 @@ export default function ContactUs() {
                     </p>
                   </div>
                 </div>
-                {/* <p className="row mt-3 m-auto sub_sub_heading m-auto">Monday - Sunday: From 10:00 AM - 8:00 PM</p> */}
               </div>
             </div>
           </div>

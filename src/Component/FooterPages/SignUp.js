@@ -15,7 +15,7 @@ function Signup() {
     email: "",
     password: "",
     cpassword: "",
-    username: ""
+    username: "",
   });
 
   const handleRegister = async () => {
@@ -37,7 +37,7 @@ function Signup() {
           email: FormData.email,
           password: FormData.password,
           cpassword: FormData.cpassword,
-          username: FormData.username
+          username: FormData.username,
         },
       };
       let res = await axios(config);
@@ -46,7 +46,15 @@ function Signup() {
         window.location.href = "/login";
       }
     } catch (error) {
-      // console.log(error);
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        alert("Error: " + error.response.data.message); // Specific error message from the server
+      } else {
+        alert("Error: Something went wrong"); // Fallback generic error message
+      }
     }
   };
   const handleChange = (e) => {
@@ -58,15 +66,13 @@ function Signup() {
   };
 
   return (
-    <>  
-
+    <>
       <div className="row m-auto mt-2 p-5">
         <div className="col-md-4 m-auto login-container ">
           <div className="right-side">
             <div className="row m-auto text-center shadow p-4">
               <h4 className="mt-3 ">Register</h4>
               <div className="inputlogin ">
-
                 <Form.Control
                   type="text"
                   className="form-control mb-3"
@@ -83,7 +89,7 @@ function Signup() {
                   value={FormData.usertype}
                   onChange={handleChange}
                 >
-                  <option >Select</option>
+                  <option>Select</option>
                   <option value="Individuals">Individuals</option>
                   <option value="Corporate">Corporate</option>
                 </Form.Select>
@@ -139,7 +145,8 @@ function Signup() {
             </div>
           </div>
         </div>
-      </div>   </>
+      </div>{" "}
+    </>
   );
 }
 

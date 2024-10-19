@@ -23,12 +23,19 @@ function Login() {
       let res = await axios(config);
 
       if (res.status === 200) {
-
         localStorage.setItem("HGuserdata", JSON.stringify(res.data));
         window.location.href = "/cart";
       }
     } catch (error) {
-      alert("An error occurred during login. Please try again.");
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        alert("Error: " + error.response.data.message); // Specific error message from the server
+      } else {
+        alert("Error: Something went wrong"); // Fallback generic error message
+      }
     }
   };
 
@@ -65,7 +72,8 @@ function Login() {
                 width: "60%",
                 marginLeft: "20%",
                 borderRadius: "3px",
-              }} value={password}
+              }}
+              value={password}
               onChange={(e) => setpassword(e.target.value)}
             />
           </div>

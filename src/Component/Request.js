@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Spinner } from "react-bootstrap"; // Import Spinner
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const RequestProposal = ({ open, setOpen }) => {
   const [errors, setErrors] = useState({});
   const [mobileno, setMobileno] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   const [requestData, setRequestData] = useState({
     companyname: "",
     email: "",
@@ -19,14 +20,9 @@ const RequestProposal = ({ open, setOpen }) => {
   const validateForm = () => {
     const formErrors = {};
     if (!requestData.fullname) formErrors.fullname = "Full Name is required";
-    // if (!requestData.companyname) formErrors.companyname = 'Company Name is required';
-    // if (!requestData.max) formErrors.max = 'Tentative is required';
     if (!mobileno) formErrors.mobileno = "Phone Number is required";
     else if (!/^\d{10}$/.test(mobileno))
       formErrors.mobileno = "Phone Number must be exactly 10 digits";
-    // if (!workshopDate) formErrors.workshopDate = 'Workshop date is required';
-    // if (!requestData.email) formErrors.email = 'Email is required';
-    // else if (!/\S+@\S+\.\S+/.test(requestData.email)) formErrors.email = 'Email is invalid';
     if (!requestData.message) formErrors.message = "Message is required";
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
@@ -34,6 +30,8 @@ const RequestProposal = ({ open, setOpen }) => {
 
   const handleRequestSubmit = async () => {
     if (!validateForm()) return;
+
+    setIsLoading(true); // Start loader
 
     try {
       const response = await axios.post(
@@ -56,11 +54,23 @@ const RequestProposal = ({ open, setOpen }) => {
         );
         setOpen(false);
         setErrors({});
+        setRequestData({
+          companyname: "",
+          email: "",
+          workshop: "",
+          max: "",
+          message: "",
+          fullname: "",
+        });
+        setMobileno("");
+        setWorkshopDate("");
       } else {
         toast.error("Submission failed. Please try again.");
       }
     } catch (error) {
       toast.error("An error occurred during submission. Please try again.");
+    } finally {
+      setIsLoading(false); // Stop loader
     }
   };
 
@@ -184,8 +194,22 @@ const RequestProposal = ({ open, setOpen }) => {
           <Button variant="secondary" onClick={() => setOpen(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleRequestSubmit}>
-            Submit
+          <Button
+            variant="primary"
+            onClick={handleRequestSubmit}
+            disabled={isLoading} // Disable when loading
+          >
+            {isLoading ? (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
