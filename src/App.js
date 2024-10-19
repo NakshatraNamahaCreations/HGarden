@@ -30,6 +30,7 @@ import ToasterComponent from "./Component/FooterPages/ToasterComponent";
 import Checkout from "./Component/checkout";
 import CategoryView from "./Component/Layout/CategoryView";
 import PaymentSuccess from "./Component/Paymentsuccess";
+import Bookings from "./Component/Bookings";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
 
         <Route path="/Paymentsuccess" element={<PaymentSuccess />} />
+        <Route path="/Bookings" element={<Bookings />} />
         <Route
           path="/corporate-view/:workshoptitle"
           element={<CorporateView />}

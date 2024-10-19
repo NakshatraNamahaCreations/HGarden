@@ -6,9 +6,10 @@ import {
   Form,
   Dropdown,
   Container,
+  Badge,
 } from "react-bootstrap";
 import { IoCallOutline } from "react-icons/io5";
-import { FaShoppingBag } from "react-icons/fa";
+import { FaShoppingBag, FaUserCircle } from "react-icons/fa"; // Import user icon
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import RequestProposal from "../Request";
@@ -19,8 +20,12 @@ export default function Header() {
   const [categoryData, setcategoryData] = useState([]);
   const [Workshop, setWorkshop] = useState([]);
   const [open, setOpen] = useState(false);
+  const userData = JSON.parse(localStorage.getItem("HGuserdata"));
+  const cartItems = useSelector((state) => state.cart.cartItems); // Get cart items from Redux
+  const cartItemCount = cartItems.length; // Get the number of items in the cart
 
-  const cartItems = useSelector((state) => state.cart.cartItems);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const handleScroll = () => {
       setSticky(window.scrollY > 100);
@@ -32,18 +37,20 @@ export default function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   useEffect(() => {
     getAllCategory();
     getAllWorkShop();
   }, []);
+
   const getAllCategory = async () => {
     let response = await axios.get(
       "https://api.healinggarden.co.in/api/category/getcategory"
     );
     let data = response.data.data.sort((a, b) => a.order - b.order);
-
     setcategoryData(data);
   };
+
   const getAllWorkShop = async () => {
     let response = await axios.get(
       "https://api.healinggarden.co.in/api/workshop/getallworkshop"
@@ -73,7 +80,6 @@ export default function Header() {
       const response = await axios.get(
         "https://api.healinggarden.co.in/api/order/getallorder"
       );
-
       setAllOrderData(response.data.data);
     } catch (error) {
       console.error("Error fetching order data:", error);
@@ -84,6 +90,12 @@ export default function Header() {
 
   const generatePathname = (category) => {
     return `/category/${category.toLowerCase().replace(/ /g, "-")}`;
+  };
+
+  // Logout functionality (example)
+  const handleLogout = () => {
+    localStorage.removeItem("HGuserdata");
+    navigate("/"); // Redirect to login page after logout
   };
 
   return (
@@ -180,6 +192,8 @@ export default function Header() {
                   </span>{" "}
                   9620520200
                 </Nav.Link>
+
+                {/* Cart Icon with Badge */}
                 <Nav.Link
                   className="text-li"
                   eventKey={2}
@@ -187,10 +201,38 @@ export default function Header() {
                     AllOrderData.length === 0 ? "/individual" : "/cart"
                   } `}
                 >
-                  <span className="call-icon p-1">
+                  <span className="call-icon p-1 position-relative">
                     <FaShoppingBag />
+                    {cartItemCount > 0 && (
+                      <Badge
+                        pill
+                        bg="danger"
+                        className="position-absolute top-0 start-100 translate-middle"
+                      >
+                        {cartItemCount}
+                      </Badge>
+                    )}
                   </span>
                 </Nav.Link>
+
+                {/* Profile Dropdown */}
+                <Dropdown align="end" className="ms-3">
+                  <Dropdown.Toggle variant="light" id="dropdown-basic">
+                    <FaUserCircle size={28} />
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item href="/Bookings">My Bookings</Dropdown.Item>
+
+                    {userData ? (
+                      <Dropdown.Item onClick={handleLogout}>
+                        Logout
+                      </Dropdown.Item>
+                    ) : (
+                      <Dropdown.Item href="/login">Login</Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
               </Nav>
             </Navbar.Collapse>
           </Container>

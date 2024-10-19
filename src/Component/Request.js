@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import React, { useState } from "react";
+import { Button, Form, Modal } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const RequestProposal = ({ open, setOpen }) => {
   const [errors, setErrors] = useState({});
-  const [mobileno, setMobileno] = useState('');
+  const [mobileno, setMobileno] = useState("");
   const [requestData, setRequestData] = useState({
-    companyname: '',
-    email: '',
-    workshop: '',
-    max: '',
-    message: '',
-    fullname: '',
+    companyname: "",
+    email: "",
+    workshop: "",
+    max: "",
+    message: "",
+    fullname: "",
   });
-  const [workshopDate, setWorkshopDate] = useState('');
+  const [workshopDate, setWorkshopDate] = useState("");
 
   const validateForm = () => {
     const formErrors = {};
-    if (!requestData.fullname) formErrors.fullname = 'Full Name is required';
+    if (!requestData.fullname) formErrors.fullname = "Full Name is required";
     // if (!requestData.companyname) formErrors.companyname = 'Company Name is required';
     // if (!requestData.max) formErrors.max = 'Tentative is required';
-    if (!mobileno) formErrors.mobileno = 'Phone Number is required';
-    else if (!/^\d{10}$/.test(mobileno)) formErrors.mobileno = 'Phone Number must be exactly 10 digits';
+    if (!mobileno) formErrors.mobileno = "Phone Number is required";
+    else if (!/^\d{10}$/.test(mobileno))
+      formErrors.mobileno = "Phone Number must be exactly 10 digits";
     // if (!workshopDate) formErrors.workshopDate = 'Workshop date is required';
     // if (!requestData.email) formErrors.email = 'Email is required';
     // else if (!/\S+@\S+\.\S+/.test(requestData.email)) formErrors.email = 'Email is invalid';
-    if (!requestData.message) formErrors.message = 'Message is required';
+    if (!requestData.message) formErrors.message = "Message is required";
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
@@ -35,26 +36,31 @@ const RequestProposal = ({ open, setOpen }) => {
     if (!validateForm()) return;
 
     try {
-      const response = await axios.post('https://api.healinggarden.co.in/api/proposal/addproposal', {
-        fullname: requestData.fullname,
-        companyname: requestData.companyname,
-        mobileno,
-        email: requestData.email,
-        workshop: requestData.workshop,
-        max: requestData.max,
-        message: requestData.message,
-        workshopDate,
-      });
+      const response = await axios.post(
+        "https://api.healinggarden.co.in/api/proposal/addproposal",
+        {
+          fullname: requestData.fullname,
+          companyname: requestData.companyname,
+          mobileno,
+          email: requestData.email,
+          workshop: requestData.workshop,
+          max: requestData.max,
+          message: requestData.message,
+          workshopDate,
+        }
+      );
 
       if (response.status === 200) {
-        toast.success('Thank you for contacting us. We will reply to you shortly.');
+        toast.success(
+          "Thank you for contacting us. We will reply to you shortly."
+        );
         setOpen(false);
         setErrors({});
       } else {
-        toast.error('Submission failed. Please try again.');
+        toast.error("Submission failed. Please try again.");
       }
     } catch (error) {
-      toast.error('An error occurred during submission. Please try again.');
+      toast.error("An error occurred during submission. Please try again.");
     }
   };
 
